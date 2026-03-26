@@ -85,13 +85,16 @@ public class TimeCheckService extends Service
 
   private long lastPublishTimestamp=0; //!<记录的上次发布局域网服务的时间戳。
 
-  private String callbackIp="127.0.0.1"; //!<回调的IP。
+  private String callbackIp="127.0.0.1"; //!<回调的 IP。
 
   private static final String TAG = "TimeCheckService"; //!<输出调试信息时使用的标记。
   private static final String LanServiceName = "com.stupidbeauty.shutdownat2100.android"; //!<局域网服务名字。
   private static final int LanServicePort = 9521; //!<局域网服务的端口号。
-//   private static final ExistMessageContainer.ServicePublishMessage.ServiceProtocolType LanServiceProtocolType = ExistMessageContainer.ServicePublishMessage.ServiceProtocolType.UDP; //!<服务协议类型是UDP。
-  private static final String LanServiceProtocolType = "UDP"; //!<服务协议类型是UDP。
+//   private static final ExistMessageContainer.ServicePublishMessage.ServiceProtocolType LanServiceProtocolType = ExistMessageContainer.ServicePublishMessage.ServiceProtocolType.UDP; //!<服务协议类型是 UDP。
+  private static final String LanServiceProtocolType = "UDP"; //!<服务协议类型是 UDP。
+
+  // ✅ 新增：记录本次运行中是否已申请过悬浮窗权限，避免重复跳转
+  private static boolean hasRequestedOverlayPermission = false;
 
   @Override
   public IBinder onBind(Intent intent) 
@@ -120,7 +123,7 @@ public class TimeCheckService extends Service
 
 	/**
 	 * 向局域网发布自己的服务。
-	 */
+	*/
 	private void publishServiceLan()
 	{
 		long currentTimestamp=System.currentTimeMillis(); //获取当前时间戳。
@@ -141,13 +144,13 @@ public class TimeCheckService extends Service
 
 
 	/**
-	 * 检查那些本应当通过GCM发送给本手机，却没有收到的事件。
-	 */
+	 * 检查那些本应当通过 GCM 发送给本手机，却没有收到的事件。
+	*/
 	private void Check4MyEvents()
 	{
     Log.d(TAG,"Check4MyEvents,57"); //Debug.
 
-    GregorianCalendar t=new GregorianCalendar(); // or Time t=new Time("GMT+8"); 加上Time Zone资料。
+    GregorianCalendar t=new GregorianCalendar(); // or Time t=new Time("GMT+8"); 加上 Time Zone 资料。
 
     int shutdownHour;
     int shutdownMinute;
@@ -174,7 +177,7 @@ public class TimeCheckService extends Service
 
 	/**
 	 * 通知局域网内的伙伴检查时间。
-	 */
+	*/
 	private void notifyCheckTime()
 	{
 		Sda2Message translateRequestBuilder = new Sda2Message (); //创建消息构造器。
@@ -207,7 +210,7 @@ public class TimeCheckService extends Service
 
 	/**
 	 * 执行关机过程。
-	 */
+	*/
 	private void executeShutDown()
 	{
 		notifyCheckTime(); //通知检查时间。
@@ -220,8 +223,8 @@ public class TimeCheckService extends Service
 	} //private void executeShutDown()
 
 	/**
-	 * 不使用root权限关机。
-	 */
+	 * 不使用 root 权限关机。
+	*/
 	private void shutDownSystemWithoutRoot()
 	{
 		String[] cmdarray= { "reboot", "-p" };
@@ -257,7 +260,7 @@ public class TimeCheckService extends Service
 
 	/**
 	 * 系统关机。
-	 */
+	*/
 	private void shutDownSystem() 
 	{
 		try //尝试关机，并且捕获可能的异常。 
@@ -276,7 +279,7 @@ public class TimeCheckService extends Service
 
 /**
  * 注册与队列事件相关的接收器。
- */
+*/
 private void RegisterQueueEventReceiver()
 {
 	// 如果接收器还未被注册，则创建并注册
@@ -307,7 +310,7 @@ private void UnregisterQueueEventReceiver() {
 
 @Override
     public void onDestroy() {
-        super.onDestroy(); // 调用父类的onDestroy方法
+        super.onDestroy(); // 调用父类的 onDestroy 方法
         // 你可以在服务被销毁时执行清理工作
         UnregisterQueueEventReceiver();
     }
@@ -315,7 +318,7 @@ private void UnregisterQueueEventReceiver() {
 	@Override
 	/**
 	 * 服务被启动。也可能是重新启动。
-	 */
+	*/
 	public int onStartCommand(Intent intent, int flags, int startId) 
 	{
 		Log.d(TAG,"onStartCommand,180"); //Debug.
@@ -371,13 +374,23 @@ private void UnregisterQueueEventReceiver() {
 	*/
 	private void checkAndRequireOverlayPermission()
 	{
-    if (Settings.canDrawOverlays(this)) // Can draw overlays
-    {
-    } // if (Settings.canDrawOverlays(this)) // Can draw overlays
-    else // Cannot draw overlays
-    {
-      toggleApplicationLock();
-    } // else // Cannot draw overlays
+    // ✅ 如果本次运行中已经申请过，直接返回，避免重复跳转
+    if (hasRequestedOverlayPermission) {
+      Log.d(TAG, "Already requested overlay permission in this run, skip");
+      return;
+    }
+
+    // ✅ 如果已经有权限，也不需要申请
+    if (Settings.canDrawOverlays(this)) {
+      Log.d(TAG, "Already has overlay permission");
+      return;
+    }
+
+    // ✅ 仅在需要时申请一次
+    hasRequestedOverlayPermission = true;
+    Log.d(TAG, "Requesting overlay permission...");
+    
+    toggleApplicationLock();
 	} // private void checkAndRequireOverlayPermission()
 	
 	/**
@@ -431,7 +444,7 @@ private void UnregisterQueueEventReceiver() {
 
 	/**
 	 * 启动悬浮窗服务
-	 */
+	*/
 	private void startFloatingService()
 	{
     Intent intent = new Intent(this, FloatingService.class);
@@ -495,7 +508,7 @@ private void UnregisterQueueEventReceiver() {
 	/**
 	 * Main initialization of the input method component.  Be sure to call
 	 * to super class.
-	 */
+	*/
 	@Override
 	public void onCreate()
 	{
@@ -510,9 +523,9 @@ private void UnregisterQueueEventReceiver() {
 
     registerBroadcastReceiver(); //注册广播事件接收器。
 
-    startHttpServer(); //启动HTTP服务器
+    startHttpServer(); //启动 HTTP 服务器
 
-    startUdpServer(); //启动UDP服务器。
+    startUdpServer(); //启动 UDP 服务器。
 
     listenClipboard(); //监听剪贴板。
 
@@ -525,7 +538,7 @@ private void UnregisterQueueEventReceiver() {
 
 	/**
 	 * 监听醒来事件。
-	 */
+	*/
 	private void listenWakeUp()
 	{
 //		waker=new Waker(this);
@@ -537,7 +550,7 @@ private void UnregisterQueueEventReceiver() {
 
 	/**
 	 * 设置未捕获的异常处理器。
-	 */
+	*/
 	private void setCrashHandler()
 	{
 		createExceptionFileDirectory(); //创建异常文件的目录。
@@ -549,7 +562,7 @@ private void UnregisterQueueEventReceiver() {
 
 	/**
 	 * 创建异常文件的目录。
-	 */
+	*/
 	private void createExceptionFileDirectory()
 	{
 		File file = new File(BaseDef.LOG_BASE_DIR);
@@ -561,7 +574,7 @@ private void UnregisterQueueEventReceiver() {
 
 	/**
 	 * 监听剪贴板。
-	 */
+	*/
 	private void listenClipboard()
 	{
 		ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
@@ -575,26 +588,26 @@ private void UnregisterQueueEventReceiver() {
 			public void onPrimaryClipChanged()
 			{
 // 具体实现
-				ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+			ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-				ClipData clipData=cb.getPrimaryClip(); //获取剪贴板数据。
+			ClipData clipData=cb.getPrimaryClip(); //获取剪贴板数据。
 
-				ClipData.Item item=clipData.getItemAt(0); //获取当前条目。
+			ClipData.Item item=clipData.getItemAt(0); //获取当前条目。
 
-				if (item!=null) //条目不为空指针。
+			if (item!=null) //条目不为空指针。
+			{
+				CharSequence charSequence=item.getText(); //获取字节序列。
+
+				if (charSequence!=null) //字节序列不为空指针。
 				{
-					CharSequence charSequence=item.getText(); //获取字节序列。
+					String clipContent=charSequence.toString(); //获取剪贴板内容。
 
-					if (charSequence!=null) //字节序列不为空指针。
-					{
-						String clipContent=charSequence.toString(); //获取剪贴板内容。
+					Log.d(TAG,"onPrimaryClipChanged，剪贴板内容："+clipContent); //Debug.
 
-						Log.d(TAG,"onPrimaryClipChanged,剪贴板内容："+clipContent); //Debug.
-
-					} //if (charSequence!=null) //字节序列不为空指针。
+				} //if (charSequence!=null) //字节序列不为空指针。
 
 
-				} //if (item!=null) //条目不为空指针。
+			} //if (item!=null) //条目不为空指针。
 
 
 			}  //public void onPrimaryClipChanged()
@@ -603,16 +616,16 @@ private void UnregisterQueueEventReceiver() {
 	} //private void listenClipboard()
 
 	/**
-	 * 启动UDP服务器。
-	 */
+	 * 启动 UDP 服务器。
+	*/
     private void startUdpServer()
-	{
+    {
       new AsyncTask<Void, Void, Void>() 
       {
         @Override
         protected Void doInBackground(Void... params) 
         {
-          new com.stupidbeauty.reneweb.androidasyncsocketexamples.udp.Server("0.0.0.0", LanServicePort); //创建UDP服务器对象。
+          new com.stupidbeauty.reneweb.androidasyncsocketexamples.udp.Server("0.0.0.0", LanServicePort); //创建 UDP 服务器对象。
 
           return null;
         }
@@ -620,8 +633,8 @@ private void UnregisterQueueEventReceiver() {
 	} //private void startUdpServer()
 
 	/**
-	 * 启动HTTP服务器，用于对同一个局域网内其它平板的请求进行响应.
-	 * 	 */
+	 * 启动 HTTP 服务器，用于对同一个局域网内其它平板的请求进行响应.
+	 * 	 * */
 	private void startHttpServer()
 	{
       AsyncHttpServer server=new AsyncHttpServer(); //Create the async server.
@@ -639,14 +652,14 @@ private void UnregisterQueueEventReceiver() {
 		TestShutDownCallback noticeCommitControlCharacterCallback=new TestShutDownCallback(); //创建回调对象，提交控制字符.
 		server.get("/testShutDown/", noticeCommitControlCharacterCallback); //添加这个回调对象.
 
-		server.listen(LanServicePort); //监听15563端口.tcp。
+		server.listen(LanServicePort); //监听 15563 端口.tcp.
 
 	} //private void startHttpServer()
 
 
 	/**
 	 * 注册广播事件接收器。
-	 */
+	*/
 	private void registerBroadcastReceiver()
 	{
 		IntentFilter filter = new IntentFilter();
@@ -667,7 +680,7 @@ private void UnregisterQueueEventReceiver() {
 
 	/**
 	 * 广播接收器。
-	 */
+	*/
 	private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -685,7 +698,7 @@ private void UnregisterQueueEventReceiver() {
 			else if (Constants.Operation.ReportMessage.equals(action)) //报告消息内容。
 			{
 				Bundle extras=intent.getExtras(); //获取参数包。
-				callbackIp=extras.getString("remoteIp"); //获取对方IP。
+				callbackIp=extras.getString("remoteIp"); //获取对方 IP。
 
 				byte[] messageContent=extras.getByteArray("messageContent"); //获取消息内容。
 
@@ -709,15 +722,15 @@ private void UnregisterQueueEventReceiver() {
       
       if (functionName==RememberMe)
       {
-        rememberRemoteIp(); //记住远端的IP。
+        rememberRemoteIp(); //记住远端的 IP。
       } //switch (functionName)
 
     }
   } //void Worker::processMessage()
 
 	/**
-	 * 记住远端的IP。
-	 */
+	 * 记住远端的 IP。
+	*/
 	private void rememberRemoteIp()
 	{
 
