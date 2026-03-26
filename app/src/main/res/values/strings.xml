@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">ShutDownAt2100</string>
+  <string name="setShutDownTime">Set shutdown time</string>
+  <string name="dialer">Dialer</string>
+  <string name="stopUsingPhone">Stop using phone</string>
+  <string name="itsNotGoodForYourPhone">It\'s not good for your phone</string>
+  <string name="translateHelpSendSucceeded">Downloading in progress.</string>
+  <string name="translateHelpSendFailed">Network error.</string>
+  <string name="darkBackgroundImage">Dark the background image</string>
+  <string name="testShutDownime">Test shut down</string>
+  <string name="applicationIcon">Application Icon</string>
+  <string name="empty" translatable="false"/>
+  <string name="backgroundImage">Background image</string>
+</resources>

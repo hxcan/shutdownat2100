@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">21点关机</string>
+  <string name="setShutDownTime">设置关机时间</string>
+  <string name="dialer">Dialer</string>
+  <string name="stopUsingPhone">Stop using phone</string>
+  <string name="itsNotGoodForYourPhone">It\'s not good for your phone</string>
+  <string name="testShutDownime">测试关机</string>
+</resources>

@@ -1,0 +1,76 @@
+apply plugin: 'com.android.application'
+
+android 
+{
+  lint
+  {
+    baseline = file("lint-baseline.xml")
+  }
+
+  compileSdkVersion 33
+
+  defaultConfig 
+  {
+    applicationId "com.stupidbeauty.shutdownat2100androidnative"
+    minSdkVersion 18
+
+    targetSdkVersion 33
+
+    versionCode 1533
+    versionName "1533.2024.8.16"
+  }
+
+  buildTypes 
+  {
+    release 
+    {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+    }
+  }
+  
+  namespace 'com.stupidbeauty.shutdownat2100androidnative'
+}
+
+dependencies 
+{
+  implementation 'com.jakewharton:butterknife:10.2.3'
+  annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
+  implementation 'com.github.hxcan:existandroid:2022.7.34'
+  implementation 'com.github.hxcan:rotatingactiveuser:2021.11.29'
+  implementation 'com.mcxiaoke.volley:library:1.0.19'
+  implementation 'com.google.code.gson:gson:2.8.5'
+  implementation 'com.github.hxcan:ShutDownAt2100Helper:2024.10.29'
+  implementation group: 'com.koushikdutta.async', name: 'androidasync', version: '2.1.7'
+  implementation group: 'com.koushikdutta.ion', name: 'ion', version: '3.1.0'
+  implementation 'com.google.protobuf:protobuf-java:3.11.4'
+  implementation 'org.apache.commons:commons-io:1.3.2'
+//   implementation 'com.stupidbeauty:uncaughtexception:2019.3.38'
+  implementation 'com.github.hxcan:CodePosition:2022.7.21'
+  implementation 'androidx.appcompat:appcompat:1.2.0'
+  implementation 'com.github.hxcan:builtinftp:2023.5.12'
+  implementation 'com.github.hxcan:ftpserver:2023.9.8'
+}
+
+// # https://stackoverflow.com/questions/65380359/lomboks-access-to-jdk-compilers-internal-packages-incompatible-with-java-16
+
+// # enable internal JDK API access at runtime
+tasks.withType(JavaCompile).configureEach {
+    options.fork = true
+    options.forkOptions.jvmArgs += [
+//         # essential for butterknife
+        '--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED',
+
+//         # if you need Glide or LomBok
+//         # these may not be the exact list, but it works for me
+        '--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED',
+        '--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED',
+        '--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED',
+        '--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED',
+        '--add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED',
+        '--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED',
+        '--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED',
+        '--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED',
+        '--add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED',
+    ]
+}
