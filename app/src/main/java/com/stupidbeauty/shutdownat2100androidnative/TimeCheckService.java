@@ -349,15 +349,21 @@ private void UnregisterQueueEventReceiver() {
 	*/
 	private void checkAndRequireExactAlarmPermission() 
 	{
-    AlarmManager am = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-    
-    if (am.canScheduleExactAlarms()) // Can schedule excact alarms
-    {
-    } // if (am.canScheduleExactAlarms()) // Can schedule excact alarms
-    else // Do not have the permission
-    {
-      requestExactAlarmPermissionk(); // Request the permission
-    } // else // Do not have the permission
+		AlarmManager am = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+		
+		// ✅ Check Android version first to avoid NoSuchMethodError on old devices
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+			// Android 12+ (API 31+) requires exact alarm permission check
+			if (am.canScheduleExactAlarms()) {
+				Log.d(TAG, "Has exact alarm permission (Android 12+)");
+			} else {
+				Log.w(TAG, "No exact alarm permission, requesting... (Android 12+)");
+				requestExactAlarmPermissionk();
+			}
+		} else {
+			// Android 11 and below don't have this permission requirement
+			Log.d(TAG, "Android version < 12, skip exact alarm permission check");
+		}
 	} // private void checkAndRequireExactAlarmPermission()
 	
 	/**
