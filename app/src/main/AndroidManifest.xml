@@ -38,6 +38,6 @@
     <service android:name="com.stupidbeauty.shutdownat2100androidnative.TimeCheckService" android:exported="true"
       tools:ignore="ExportedService">
     </service>
-    <service android:name="com.example.lzc.floatingwindowdemo.service.FloatingService" android:exported="true"/>
+    <service android:name="com.stupidbeauty.lzc.floatingwindowdemo.service.FloatingService" android:exported="true"/>
     </application>
 </manifest>
