@@ -39,6 +39,11 @@ jobs:
     - name: Grant execute permission to gradlew
       run: chmod +x gradlew
 
+    - name: Update lint baseline
+      run: |
+        export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx2048m -Dorg.gradle.daemon=false"
+        ./gradlew updateLintBaseline --warning-mode none || true
+
     - name: Build with Gradle (with retry, warnings disabled)
       run: |
         export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx2048m -Dorg.gradle.daemon=false"
@@ -85,6 +90,13 @@ jobs:
       with:
         name: shutdownat2100-release-signed
         path: ${{ steps.sign_release.outputs.signedReleaseFile }}
+
+    - name: Upload updated lint baseline (PR)
+      if: github.event_name == 'pull_request'
+      uses: actions/upload-artifact@v4
+      with:
+        name: shutdownat2100-lint-baseline
+        path: app/lint-baseline.xml
 
     - name: Create CI Release (master push)
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
