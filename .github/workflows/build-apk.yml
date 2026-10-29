@@ -63,15 +63,25 @@ jobs:
         ls -la app/build/outputs/apk/debug/ || echo "Directory not found"
         find app/build/outputs -name "*.apk" || echo "No APK files found"
 
+    # Keystore Secrets are not configured in this repository yet. Until they are,
+    # this step fails on an invalid/empty keystore. continue-on-error keeps the
+    # main line (compile + Debug APK) green; signing kicks in automatically once
+    # the Secrets are added.
+    #
+    # Two naming conventions are accepted so the owner can copy the Secrets
+    # verbatim from either of their other repos:
+    #   hxcan/sisterfuture     : APK_KEY_STORE / KEYSTORE_ALIAS / KEY_STORE_PASSWORD
+    #   hxcan/dynamicwallpaper : KEY_STORE_CONTENT_BASE64 / KEYSTORE_ALIAS / KEYSTORE_SECRET
     - name: Sign Release APK
       id: sign_release
+      continue-on-error: true
       uses: r0adkll/sign-android-release@v1
       with:
         releaseDirectory: app/build/outputs/apk/release
-        signingKeyBase64: ${{ secrets.APK_KEY_STORE }}
+        signingKeyBase64: ${{ secrets.APK_KEY_STORE || secrets.KEY_STORE_CONTENT_BASE64 }}
         alias: ${{ secrets.KEYSTORE_ALIAS }}
-        keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-        keyPassword: ${{ secrets.KEY_STORE_PASSWORD }}
+        keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD || secrets.KEYSTORE_SECRET }}
+        keyPassword: ${{ secrets.KEY_STORE_PASSWORD || secrets.KEYSTORE_SECRET }}
 
     - name: List Signed APK Files
       run: |
@@ -80,7 +90,7 @@ jobs:
         find app/build/outputs -name "*-signed.apk" || echo "No signed APK files found"
 
     - name: Upload Debug APK artifact (PR)
-      if: github.event_name == 'pull_request' && steps.sign_release.outputs.signedReleaseFile != ''
+      if: github.event_name == 'pull_request'
       uses: actions/upload-artifact@v4
       with:
         name: shutdownat2100-debug
