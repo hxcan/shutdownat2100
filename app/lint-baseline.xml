@@ -1,15 +1,734 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 7.4.1" type="baseline" client="gradle" dependencies="false" name="AGP (7.4.1)" variant="fatal" version="7.4.1">
+<issues format="6" by="lint 8.4.1" type="baseline" client="gradle" dependencies="false" name="AGP (8.4.1)" variant="all" version="8.4.1">
 
     <issue
-        id="ExpiredTargetSdkVersion"
-        message="Google Play requires that apps target API level 31 or higher.&#xA;"
-        errorLine1="  defaultConfig "
+        id="InlinedApi"
+        message="Field requires API level 28 (current min is 18): `android.Manifest.permission#FOREGROUND_SERVICE`"
+        errorLine1="  private static final String PERMISSION_FORGROUND = Manifest.permission.FOREGROUND_SERVICE; //!&lt;前台服务"
+        errorLine2="                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/FullscreenActivity.java"
+            line="61"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 23 (current min is 18): `android.provider.Settings#ACTION_MANAGE_OVERLAY_PERMISSION`"
+        errorLine1="    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/FullscreenActivity.java"
+            line="230"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 23 (current min is 18): `android.provider.Settings#ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS`"
+        errorLine1="      Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);"
+        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="431"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 31 (current min is 18): `android.provider.Settings#ACTION_REQUEST_SCHEDULE_EXACT_ALARM`"
+        errorLine1="      Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);  // 跳转语言和输入设备"
+        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="448"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 23 (current min is 18): `android.provider.Settings#ACTION_MANAGE_OVERLAY_PERMISSION`"
+        errorLine1="      Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);  // 跳转语言和输入设备"
+        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="472"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 24 (current min is 18): `android.app.NotificationManager#IMPORTANCE_LOW`"
+        errorLine1="    NotificationChannel chan = new NotificationChannel( &quot;ShutDownAt2100Foreground&quot;, &quot;ShutDownAt2100 Foreground Service&quot;, NotificationManager.IMPORTANCE_LOW);"
+        errorLine2="                                                                                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="518"
+            column="122"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 18): `android.provider.Settings#canDrawOverlays`"
+        errorLine1="    if (Settings.canDrawOverlays(this)) {"
+        errorLine2="                 ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="389"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 18): `android.app.NotificationManager#isNotificationPolicyAccessGranted`"
+        errorLine1="    if (notificationManager.isNotificationPolicyAccessGranted()) {"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="421"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 18): `new android.app.NotificationChannel`"
+        errorLine1="    NotificationChannel chan = new NotificationChannel( &quot;ShutDownAt2100Foreground&quot;, &quot;ShutDownAt2100 Foreground Service&quot;, NotificationManager.IMPORTANCE_LOW);"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="518"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 18): `android.app.NotificationManager#createNotificationChannel`"
+        errorLine1="    mNM.createNotificationChannel(chan);"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="520"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 18): `android.app.Notification.Builder#setChannelId`"
+        errorLine1="      .setChannelId(&quot;ShutDownAt2100Foreground&quot;)"
+        errorLine2="       ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="530"
+            column="8"/>
+    </issue>
+
+    <issue
+        id="OldTargetApi"
+        message="Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details."
+        errorLine1="    targetSdkVersion 33"
         errorLine2="    ~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="13"
+            line="17"
             column="5"/>
+    </issue>
+
+    <issue
+        id="PrivateApi"
+        message="Accessing internal APIs via reflection is not supported and may not work on all devices or in the future"
+        errorLine1="                Class&lt;?> c = Class.forName(&quot;com.android.internal.R$dimen&quot;);"
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/lzc/floatingwindowdemo/view/FloatWindowSmallView.java"
+            line="150"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="SuspiciousIndentation"
+        message="The indentation string here is different from on the previous line (`&quot; &quot;` vs `\t`)"
+        errorLine1="  return result;"
+        errorLine2="~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/FullscreenActivity.java"
+            line="282"
+            column="1"/>
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/FullscreenActivity.java"
+            line="266"
+            column="1"
+            message="Previous line indentation here"/>
+    </issue>
+
+    <issue
+        id="SuspiciousIndentation"
+        message="Suspicious indentation: This is indented but is not continuing the previous expression (`shutdownMinute=Prefe`...)"
+        errorLine1="    Log.d(TAG, CodePosition.newInstance().toString()+ &quot;, shutdowntimePicker: &quot;+ shutdowntimePicker); // Debug."
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/FullscreenActivity.java"
+            line="298"
+            column="5"/>
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/FullscreenActivity.java"
+            line="296"
+            column="3"
+            message="Previous statement here"/>
+    </issue>
+
+    <issue
+        id="SuspiciousIndentation"
+        message="The indentation string here is different from on the previous line (`&quot; &quot;` vs `\t`)"
+        errorLine1="  return START_STICKY; //被杀死时，自动重启。"
+        errorLine2="~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="352"
+            column="1"/>
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="349"
+            column="1"
+            message="Previous line indentation here"/>
+    </issue>
+
+    <issue
+        id="LongLogTag"
+        message="The logging tag can be at most 23 characters, was 29 (BuiltinFtpServerErrorListener)"
+        errorLine1="        Log.d(TAG, &quot;onError, error from builtin ftp server: &quot; + errorCode); // Report error. Chen ixn."
+        errorLine2="              ~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/hxlauncher/listener/BuiltinFtpServerErrorListener.java"
+            line="14"
+            column="15"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="  @BindView(R.id.shutdowntimePicker) TimePicker shutdowntimePicker; //!&lt; The time pick for shut donw time."
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/FullscreenActivity.java"
+            line="66"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="  @OnClick(R.id.setShutDownTimebutton2)"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/FullscreenActivity.java"
+            line="68"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="NonConstantResourceId"
+        message="Resource IDs will be non-final by default in Android Gradle Plugin version 8.0, avoid using them as annotation attributes"
+        errorLine1="  @OnClick(R.id.testShutDownTimebutton2)"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/FullscreenActivity.java"
+            line="100"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="RedundantLabel"
+        message="Redundant label can be removed"
+        errorLine1="      android:label=&quot;@string/app_name&quot; "
+        errorLine2="      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="25"
+            column="7"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of `compileSdkVersion` than 33 is available: 34"
+        errorLine1="  compileSdkVersion 33"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
+            line="10"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.code.gson:gson than 2.8.5 is available: 2.10.1"
+        errorLine1="  implementation &apos;com.google.code.gson:gson:2.8.5&apos;"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
+            line="42"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.koushikdutta.async:androidasync than 2.1.7 is available: 3.1.0"
+        errorLine1="  implementation group: &apos;com.koushikdutta.async&apos;, name: &apos;androidasync&apos;, version: &apos;2.1.7&apos;"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
+            line="44"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.protobuf:protobuf-java than 3.11.4 is available: 3.22.3"
+        errorLine1="  implementation &apos;com.google.protobuf:protobuf-java:3.11.4&apos;"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
+            line="46"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.github.hxcan:CodePosition than 2022.7.21 is available: 2023.5.19"
+        errorLine1="  implementation &apos;com.github.hxcan:CodePosition:2022.7.21&apos;"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
+            line="49"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.appcompat:appcompat than 1.2.0 is available: 1.8.0"
+        errorLine1="  implementation &apos;androidx.appcompat:appcompat:1.2.0&apos;"
+        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
+            line="50"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="LockedOrientationActivity"
+        message="Expecting `android:screenOrientation=&quot;unspecified&quot;` or `&quot;fullSensor&quot;` for this activity so the user can use the application in any orientation and provide a great experience on Chrome OS devices"
+        errorLine1="      android:screenOrientation=&quot;portrait&quot;"
+        errorLine2="      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="24"
+            column="7"/>
+    </issue>
+
+    <issue
+        id="DiscouragedApi"
+        message="Should not restrict activity to fixed orientation. This may not be suitable for different form factors, causing the app to be letterboxed."
+        errorLine1="      android:screenOrientation=&quot;portrait&quot;"
+        errorLine2="      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="24"
+            column="7"/>
+    </issue>
+
+    <issue
+        id="DiscouragedApi"
+        message="Use of `scheduleAtFixedRate` is strongly discouraged because it can lead to unexpected behavior when Android processes become cached (tasks may unexpectedly execute hundreds or thousands of times in quick succession when a process changes from cached to uncached); prefer using `schedule`"
+        errorLine1="            timer.scheduleAtFixedRate(new RefreshTask(), 0, 4000);"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/lzc/floatingwindowdemo/service/FloatingService.java"
+            line="57"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;translateHelpSendSucceeded&quot; is not translated in &quot;zh&quot; (Chinese)"
+        errorLine1="  &lt;string name=&quot;translateHelpSendSucceeded&quot;>Downloading in progress.&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="8"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;translateHelpSendFailed&quot; is not translated in &quot;zh&quot; (Chinese)"
+        errorLine1="  &lt;string name=&quot;translateHelpSendFailed&quot;>Network error.&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="9"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;darkBackgroundImage&quot; is not translated in &quot;zh&quot; (Chinese)"
+        errorLine1="  &lt;string name=&quot;darkBackgroundImage&quot;>Dark the background image&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="10"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;applicationIcon&quot; is not translated in &quot;zh&quot; (Chinese)"
+        errorLine1="  &lt;string name=&quot;applicationIcon&quot;>Application Icon&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="12"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;backgroundImage&quot; is not translated in &quot;zh&quot; (Chinese)"
+        errorLine1="  &lt;string name=&quot;backgroundImage&quot;>Background image&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="14"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="TrustAllX509TrustManager"
+        message="`checkClientTrusted` is empty, which could cause insecure network traffic due to trusting arbitrary TLS/SSL certificates presented by peers">
+        <location
+            file="$GRADLE_USER_HOME/caches/modules-2/files-2.1/com.rabbitmq/amqp-client/3.6.3/2f7298e92d6a8be43f87fb8c6428876717ec9b33/amqp-client-3.6.3.jar"/>
+    </issue>
+
+    <issue
+        id="TrustAllX509TrustManager"
+        message="`checkServerTrusted` is empty, which could cause insecure network traffic due to trusting arbitrary TLS/SSL certificates presented by peers">
+        <location
+            file="$GRADLE_USER_HOME/caches/modules-2/files-2.1/com.rabbitmq/amqp-client/3.6.3/2f7298e92d6a8be43f87fb8c6428876717ec9b33/amqp-client-3.6.3.jar"/>
+    </issue>
+
+    <issue
+        id="TrustAllX509TrustManager"
+        message="`checkClientTrusted` is empty, which could cause insecure network traffic due to trusting arbitrary TLS/SSL certificates presented by peers">
+        <location
+            file="$GRADLE_USER_HOME/caches/transforms-4/81a4fb50af70e7fd5a3e93bf9d9ee539/transformed/androidasync-3.1.0/jars/classes.jar"/>
+    </issue>
+
+    <issue
+        id="TrustAllX509TrustManager"
+        message="`checkClientTrusted` is empty, which could cause insecure network traffic due to trusting arbitrary TLS/SSL certificates presented by peers">
+        <location
+            file="$GRADLE_USER_HOME/caches/transforms-4/81a4fb50af70e7fd5a3e93bf9d9ee539/transformed/androidasync-3.1.0/jars/classes.jar"/>
+    </issue>
+
+    <issue
+        id="TrustAllX509TrustManager"
+        message="`checkServerTrusted` is empty, which could cause insecure network traffic due to trusting arbitrary TLS/SSL certificates presented by peers">
+        <location
+            file="$GRADLE_USER_HOME/caches/transforms-4/81a4fb50af70e7fd5a3e93bf9d9ee539/transformed/androidasync-3.1.0/jars/classes.jar"/>
+    </issue>
+
+    <issue
+        id="ExportedService"
+        message="Exported service does not require permission"
+        errorLine1="    &lt;service android:name=&quot;com.stupidbeauty.lzc.floatingwindowdemo.service.FloatingService&quot; android:exported=&quot;true&quot;/>"
+        errorLine2="     ~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="42"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="DataExtractionRules"
+        message="The attribute `android:fullBackupContent` is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute `android:dataExtractionRules` specifying an `@xml` resource which configures cloud backups and device transfers on Android 12 and higher."
+        errorLine1="    android:fullBackupContent=&quot;@xml/backup_descriptor&quot;"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="20"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="Do not place Android context classes in static fields; this is a memory leak"
+        errorLine1=" private static Context mContext;"
+        errorLine2="         ~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/ShutDownAt2100Application.java"
+            line="38"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="This `AsyncTask` class should be static or leaks might occur (anonymous android.os.AsyncTask)"
+        errorLine1="  new AsyncTask&lt;Void, Void, Void>()"
+        errorLine2="  ^">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="202"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="This `AsyncTask` class should be static or leaks might occur (anonymous android.os.AsyncTask)"
+        errorLine1="      new AsyncTask&lt;Void, Void, Void>() "
+        errorLine2="      ^">
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="667"
+            column="7"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.a1469931286836800300bw` appears to be unused">
+        <location
+            file="src/main/res/drawable-hdpi/a1469931286836800300bw.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.back` appears to be unused"
+        errorLine1="&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; android:shape=&quot;rectangle&quot;>"
+        errorLine2="^">
+        <location
+            file="src/main/res/drawable/back.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.yellow` appears to be unused"
+        errorLine1="  &lt;color name=&quot;yellow&quot;>#ffff00&lt;/color>"
+        errorLine2="         ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/color.xml"
+            line="3"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.equ4ehwjpglarge1080` appears to be unused">
+        <location
+            file="src/main/res/drawable-hdpi/equ4ehwjpglarge1080.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.g13girlheadsquare64` appears to be unused">
+        <location
+            file="src/main/res/drawable-hdpi/g13girlheadsquare64.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.stopusingphone` appears to be unused">
+        <location
+            file="src/main/res/drawable-hdpi/stopusingphone.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.dialer` appears to be unused"
+        errorLine1="  &lt;string name=&quot;dialer&quot;>Dialer&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="5"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.stopUsingPhone` appears to be unused"
+        errorLine1="  &lt;string name=&quot;stopUsingPhone&quot;>Stop using phone&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="6"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.itsNotGoodForYourPhone` appears to be unused"
+        errorLine1="  &lt;string name=&quot;itsNotGoodForYourPhone&quot;>It\&apos;s not good for your phone&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="7"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.translateHelpSendSucceeded` appears to be unused"
+        errorLine1="  &lt;string name=&quot;translateHelpSendSucceeded&quot;>Downloading in progress.&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="8"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.translateHelpSendFailed` appears to be unused"
+        errorLine1="  &lt;string name=&quot;translateHelpSendFailed&quot;>Network error.&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="9"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.darkBackgroundImage` appears to be unused"
+        errorLine1="  &lt;string name=&quot;darkBackgroundImage&quot;>Dark the background image&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="10"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.applicationIcon` appears to be unused"
+        errorLine1="  &lt;string name=&quot;applicationIcon&quot;>Application Icon&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="12"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.empty` appears to be unused"
+        errorLine1="  &lt;string name=&quot;empty&quot; translatable=&quot;false&quot;/>"
+        errorLine2="          ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="13"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.backgroundImage` appears to be unused"
+        errorLine1="  &lt;string name=&quot;backgroundImage&quot;>Background image&lt;/string>"
+        errorLine2="          ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="14"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.t20170102_174656_ichtone10801920` appears to be unused">
+        <location
+            file="src/main/res/drawable-hdpi/t20170102_174656_ichtone10801920.jpg"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.z00655` appears to be unused">
+        <location
+            file="src/main/res/drawable-hdpi/z00655.png"/>
+    </issue>
+
+    <issue
+        id="IconColors"
+        message="Notification icons must be entirely white">
+        <location
+            file="src/main/res/drawable-hdpi/ic_launcher.png"/>
+        <location
+            file="src/main/java/com/stupidbeauty/shutdownat2100androidnative/TimeCheckService.java"
+            line="524"
+            column="21"
+            message="Icon used in notification here"/>
+    </issue>
+
+    <issue
+        id="IconLauncherShape"
+        message="Launcher icons should not fill every pixel of their square region; see the design guide for details">
+        <location
+            file="src/main/res/drawable-hdpi/ic_launcher.png"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/bg_small.png` in densityless folder">
+        <location
+            file="src/main/res/drawable/bg_small.png"/>
+    </issue>
+
+    <issue
+        id="IconMissingDensityFolder"
+        message="Missing density variation folders in `src/main/res`: drawable-mdpi, drawable-xhdpi, drawable-xxhdpi">
+        <location
+            file="src/main/res"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view `FloatWindowSmallView` overrides `onTouchEvent` but not `performClick`"
+        errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
+        errorLine2="                   ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/lzc/floatingwindowdemo/view/FloatWindowSmallView.java"
+            line="87"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;展示悬浮窗&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;展示悬浮窗&quot; />"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_main.xml"
+            line="11"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Use &quot;`Gravity.START`&quot; instead of &quot;`Gravity.LEFT`&quot; to ensure correct behavior in right-to-left locales"
+        errorLine1="                smallWindowParams.gravity = Gravity.LEFT | Gravity.TOP;"
+        errorLine2="                                                    ~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/lzc/floatingwindowdemo/MyWindowManager.java"
+            line="78"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        message="Use &quot;`Gravity.START`&quot; instead of &quot;`Gravity.LEFT`&quot; to ensure correct behavior in right-to-left locales"
+        errorLine1="                bigWindowParams.gravity = Gravity.LEFT | Gravity.TOP;"
+        errorLine2="                                                  ~~~~">
+        <location
+            file="src/main/java/com/stupidbeauty/lzc/floatingwindowdemo/MyWindowManager.java"
+            line="141"
+            column="51"/>
     </issue>
 
 </issues>
