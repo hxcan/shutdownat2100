@@ -24,7 +24,9 @@ jobs:
         export ANDROID_HOME=/usr/local/lib/android/sdk
         export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/tools/bin
         yes | sdkmanager --licenses > /dev/null 2>&1 || true
-        sdkmanager "platforms;android-33" "build-tools;34.0.0"
+        # 34.0.0: AGP 8.4.1 默认 build-tools（编译用）
+        # 29.0.3: r0adkll/sign-android-release@v1 硬编码查找 zipalign（签名用）
+        sdkmanager "platforms;android-33" "build-tools;34.0.0" "build-tools;29.0.3"
 
     - name: Cache Gradle packages
       uses: actions/cache@v3
@@ -78,21 +80,21 @@ jobs:
         find app/build/outputs -name "*-signed.apk" || echo "No signed APK files found"
 
     - name: Upload Debug APK artifact (PR)
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' && steps.sign_release.outputs.signedReleaseFile != ''
       uses: actions/upload-artifact@v4
       with:
         name: shutdownat2100-debug
         path: app/build/outputs/apk/debug/*.apk
 
     - name: Upload Signed Release APK artifact (PR)
-      if: github.event_name == 'pull_request'
+      if: github.event_name == 'pull_request' && steps.sign_release.outputs.signedReleaseFile != ''
       uses: actions/upload-artifact@v4
       with:
         name: shutdownat2100-release-signed
         path: ${{ steps.sign_release.outputs.signedReleaseFile }}
 
-    - name: Upload updated lint baseline (PR)
-      if: github.event_name == 'pull_request'
+    - name: Upload updated lint baseline
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: shutdownat2100-lint-baseline
