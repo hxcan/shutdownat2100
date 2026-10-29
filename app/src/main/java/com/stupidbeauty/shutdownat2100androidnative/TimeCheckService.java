@@ -96,6 +96,9 @@ public class TimeCheckService extends Service
   // ✅ 新增：记录本次运行中是否已申请过悬浮窗权限，避免重复跳转
   private static boolean hasRequestedOverlayPermission = false;
 
+  // ✅ 新增：记录本次运行中是否已申请过勿扰权限，避免重复跳转
+  private static boolean hasRequestedNotificationPolicyPermission = false;
+
   @Override
   public IBinder onBind(Intent intent) 
   {
@@ -339,6 +342,8 @@ private void UnregisterQueueEventReceiver() {
 
 		checkAndRequireExactAlarmPermission(); // Check and require the exact alarm permission.
 
+		checkAndRequireNotificationPolicyPermission(); // Check and require the notification policy (勿扰) permission.
+
     AlarmScheduler alarmSchedular=new AlarmScheduler(); // Create an alarm scheduler.
       
     alarmSchedular.schduleAlarm(); // Schecule alarm.
@@ -392,6 +397,45 @@ private void UnregisterQueueEventReceiver() {
     
     toggleApplicationLock();
 	} // private void checkAndRequireOverlayPermission()
+	
+	/**
+	* Check and require the notification policy (勿扰模式) permission.
+	*
+	* <p>关机时段自动开启勿扰模式需要此权限。未授权时引导主人在系统设置中开启。</p>
+	*/
+	private void checkAndRequireNotificationPolicyPermission() 
+	{
+    // ✅ 如果本次运行中已经申请过，直接返回，避免重复跳转
+    if (hasRequestedNotificationPolicyPermission) {
+      Log.d(TAG, "Already requested notification policy permission in this run, skip");
+      return;
+    }
+
+    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    if (notificationManager == null) {
+      Log.w(TAG, "Notification manager is null, skip notification policy permission check");
+      return;
+    }
+
+    // ✅ 如果已经有权限，也不需要申请
+    if (notificationManager.isNotificationPolicyAccessGranted()) {
+      Log.d(TAG, "Already has notification policy access");
+      return;
+    }
+
+    // ✅ 仅在需要时申请一次
+    hasRequestedNotificationPolicyPermission = true;
+    Log.d(TAG, "Requesting notification policy access (勿扰权限)...");
+
+    try {
+      Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+      intent.setData(Uri.parse("package:" + getPackageName()));
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      startActivity(intent);
+    } catch (Exception e) {
+      Log.w(TAG, "Failed to open notification policy access settings", e);
+    }
+	} // private void checkAndRequireNotificationPolicyPermission()
 	
 	/**
 	* Request exact alarm permission.
