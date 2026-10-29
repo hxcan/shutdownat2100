@@ -9,6 +9,7 @@
   <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+  <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
   <application
     android:name=".ShutDownAt2100Application"
     android:allowBackup="true"
@@ -39,5 +40,5 @@
       tools:ignore="ExportedService">
     </service>
     <service android:name="com.stupidbeauty.lzc.floatingwindowdemo.service.FloatingService" android:exported="true"/>
-    </application>
+  </application>
 </manifest>
