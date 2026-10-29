@@ -9,7 +9,7 @@ import android.provider.Settings;
 import android.content.Intent;
 import android.os.Environment;
 import android.content.pm.ApplicationInfo;
-import android.content.LauncherApps;
+import android.content.pm.LauncherApps;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -63,7 +63,9 @@ import com.koushikdutta.async.http.server.AsyncHttpServer;
 import com.koushikdutta.async.http.server.AsyncHttpServerRequest;
 import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
 import com.koushikdutta.async.http.server.HttpServerRequestCallback;
-// import com.stupidbeauty.shutdownat2100.AmqpMessage;
+import com.stupidbeauty.exist.ExistMessageContainer;
+import com.stupidbeauty.exist.ServicePublisher;
+import com.stupidbeauty.lanime.Constants;
 import com.stupidbeauty.shutdownat2100.Sda2FunctionName;
 import com.stupidbeauty.shutdownat2100.Sda2Message;
 import com.stupidbeauty.shutdownat2100.callback.TestShutDownCallback;
@@ -94,9 +96,6 @@ public class TimeCheckService extends Service
   // ✅ 新增：记录本次运行中是否已申请过悬浮窗权限，避免重复跳转
   private static boolean hasRequestedOverlayPermission = false;
 
-  // ✅ 新增：记录本次运行中是否已申请过勿扰权限，避免重复跳转
-  private static boolean hasRequestedNotificationPolicyPermission = false;
-
   @Override
   public IBinder onBind(Intent intent) 
   {
@@ -108,7 +107,7 @@ public class TimeCheckService extends Service
 	 *
 	 * @author root 蔡火胜。
 	 *
-	 * */
+	 */
 	public class MyReceiver extends BroadcastReceiver 
 	{
 		@Override
@@ -120,29 +119,29 @@ public class TimeCheckService extends Service
 				Check4MyEvents(); //检查延迟的事件。
       } //else if (intent.getAction().equals(Intent.ACTION_TIME_TICK)) //时钟。
 		} // public void onReceive(Context context, Intent intent)
-	} // public class MyReceiver
+	} // public class MyReceiver extends BroadcastReceiver
 
 	/**
 	 * 向局域网发布自己的服务。
 	*/
 	private void publishServiceLan()
 	{
-long currentTimestamp=System.currentTimeMillis(); //获取当前时间戳。
-if ((currentTimestamp-lastPublishTimestamp)>MinimalPublishIntervalMilliseconds) //从上次发布到现在，已经经过了足够长的时间。
-{
-  Log.d(TAG,"publishServiceLan,57"); //Debug.
+		long currentTimestamp=System.currentTimeMillis(); //获取当前时间戳。
+		if ((currentTimestamp-lastPublishTimestamp)>MinimalPublishIntervalMilliseconds) //从上次发布到现在，已经经过了足够长的时间。
+		{
+			Log.d(TAG,"publishServiceLan,57"); //Debug.
 
 
 
-  ServicePublisher servicePublisher=new ServicePublisher(this); //创建一个发布器。
+			ServicePublisher servicePublisher=new ServicePublisher(this); //创建一个发布器。
 
-  servicePublisher.publishService(LanServiceName,LanServicePort,LanServiceProtocolType); //发布服务。
+			servicePublisher.publishService(LanServiceName,LanServicePort,LanServiceProtocolType); //发布服务。
 
 
+			lastPublishTimestamp=currentTimestamp; //记录发布时间。
+		} //if ((currentTimestamp-lastPublishTimestamp)>MinimalPublishIntervalMilliseconds) //从上次发布到现在，已经经过了足够长的时间。
+	} //private void publishServiceLan()
 
-  lastPublishTimestamp=currentTimestamp; //记录发布时间。
-}
-} //if ((currentTimestamp-lastPublishTimestamp)>MinimalPublishIntervalMilliseconds)
 
 	/**
 	 * 检查那些本应当通过 GCM 发送给本手机，却没有收到的事件。
@@ -151,27 +150,27 @@ if ((currentTimestamp-lastPublishTimestamp)>MinimalPublishIntervalMilliseconds) 
 	{
     Log.d(TAG,"Check4MyEvents,57"); //Debug.
 
-    GregorianCalendar t=new GregorianCalendar(); // or Time t=new Time("GMT+8"); 加上 Time Zone 资料.
+    GregorianCalendar t=new GregorianCalendar(); // or Time t=new Time("GMT+8"); 加上 Time Zone 资料。
 
     int shutdownHour;
     int shutdownMinute;
 
     shutdownHour= PreferenceManagerUtil.getShutdownHour(this);
     shutdownMinute=PreferenceManagerUtil.getShutdownMinute(this);
-    Log.d(TAG, CodePosition.newInstance().toString()+ ", package name: " + getPackageName() + ", shut down hour: " + shutdownHour + ", shut down minute: " + shutdownMinute); // Debug.
+    Log.d(TAG, CodePosition.newInstance().toString()+ ", package name: "+ getPackageName() + ", shut down hour: " + shutdownHour + ", shut down minute: " + shutdownMinute); // Debug.
 
     GregorianCalendar thresholdTime=new GregorianCalendar(t.get(GregorianCalendar.YEAR),t.get(GregorianCalendar.MONTH),t.get(GregorianCalendar.DATE),shutdownHour,shutdownMinute); //阈值时间。
 
     if (t.after(thresholdTime)) // Later than shut down time
     {
-      Log.d(TAG, CodePosition.newInstance().toString()+ ", package name: " + getPackageName() + ", shut down hour: " + shutdownHour + ", shut down minute: " + shutdownMinute + ", executing shut donw."); // Debug.
+      Log.d(TAG, CodePosition.newInstance().toString()+ ", package name: "+ getPackageName() + ", shut down hour: " + shutdownHour + ", shut down minute: " + shutdownMinute + ", executing shut donw."); // Debug.
       executeShutDown(); //执行关机过程。
 
       MyWindowManager.createBigWindow(getApplicationContext());
     } //if (t.after(thresholdTime)) //时间比阈值时间还要晚。
     else // Not later
     {
-      Log.d(TAG, CodePosition.newInstance().toString()+ ", package name: " + getPackageName() + ", shut down hour: " + shutdownHour + ", shut down minute: " + shutdownMinute + ", removing big window."); // Debug.
+      Log.d(TAG, CodePosition.newInstance().toString()+ ", package name: "+ getPackageName() + ", shut down hour: " + shutdownHour + ", shut down minute: " + shutdownMinute + ", removing big window."); // Debug.
       MyWindowManager.removeBigWindow(getApplicationContext());
     } // else // Not later
 	} //public void Check4MyEvents()
@@ -181,21 +180,22 @@ if ((currentTimestamp-lastPublishTimestamp)>MinimalPublishIntervalMilliseconds) 
 	*/
 	private void notifyCheckTime()
 	{
-	Sda2Message translateRequestBuilder = new Sda2Message (); //创建消息构造器。
+		Sda2Message translateRequestBuilder = new Sda2Message (); //创建消息构造器。
 
-	try //尝试构造请求对象，并且捕获可能的异常。
-	{
-		translateRequestBuilder.setFunctionName(CheckTime); //设置函数名字，检查时间。
-	} //try //尝试构造请求对象，并且捕获可能的异常。
-	catch (Exception e)
-	{
-		e.printStackTrace();
-	}
+		try //尝试构造请求对象，并且捕获可能的异常。
+		{
+			translateRequestBuilder.setFunctionName(CheckTime); //设置函数名字，检查时间。
+		} //try //尝试构造请求对象，并且捕获可能的异常。
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
     CBORObject cborObject= CBORObject.FromObject(translateRequestBuilder); //创建对象
 
     byte[] messageContent=cborObject.EncodeToBytes();
 
-		// final byte[] messageContent=translateRequestBuilder.build().toByteArray(); //序列化成字节数组。
+		// final byte[] messageContent=translateRequestBuilder.build().toByteArray();//序列化成字节数组。
+
 		new AsyncTask<Void, Void, Void>()
 		{
 			@Override
@@ -213,7 +213,7 @@ if ((currentTimestamp-lastPublishTimestamp)>MinimalPublishIntervalMilliseconds) 
 	*/
 	private void executeShutDown()
 	{
-	notifyCheckTime(); //通知检查时间。
+		notifyCheckTime(); //通知检查时间。
 
 		shutDownSystem(); //关机。
 
@@ -227,35 +227,35 @@ if ((currentTimestamp-lastPublishTimestamp)>MinimalPublishIntervalMilliseconds) 
 	*/
 	private void shutDownSystemWithoutRoot()
 	{
-	String[] cmdarray= { "reboot", "-p" };
+		String[] cmdarray= { "reboot", "-p" };
 
 
-	Log.d(TAG,"shutDownSystemWithoutRoot"); //Debug.
-	try //尝试关机，并且捕获可能的异常。
-	{
-		Runtime runtime = Runtime.getRuntime(); //获取运行时对象。
-		Process proc=runtime.exec("sh"); //创建进程，执行命令。
-		Log.d(TAG,"shutDownSystemWithoutRoot, 183"); //Debug.
-		DataOutputStream os=new DataOutputStream(proc.getOutputStream()); //获取输出流。
-		os.writeBytes("reboot -p\n"); //输入命令，关机。
-		os.flush(); //刷新缓冲区。
+		Log.d(TAG,"shutDownSystemWithoutRoot"); //Debug.
+		try //尝试关机，并且捕获可能的异常。
+		{
+			Runtime runtime = Runtime.getRuntime(); //获取运行时对象。
+			Process proc=runtime.exec("sh"); //创建进程，执行命令。
+			Log.d(TAG,"shutDownSystemWithoutRoot, 183"); //Debug.
+			DataOutputStream os = new DataOutputStream(proc.getOutputStream()); //获取输出流。
+			os.writeBytes("reboot -p\n"); //输入命令，关机。
+			os.flush(); //刷新缓冲区。
 
-		Log.d(TAG,"shutDownSystemWithoutRoot, 192"); //Debug.
-		byte[] wholeContent=new byte[65535];
+			Log.d(TAG,"shutDownSystemWithoutRoot, 192"); //Debug.
+			byte[] wholeContent=new byte[65535];
 
-		DataInputStream is=new DataInputStream(proc.getInputStream()); //获取输入流。
-		is.readFully(wholeContent);
-		String ouptutLine=is.readUTF();
+			DataInputStream is=new DataInputStream(proc.getInputStream());
+//			is.readFully(wholeContent);
+//			String ouptutLine=is.readUTF();
 
-		Log.d(TAG,"shutDownSystemWithoutRoot, output: "+ouptutLine); //Debug.
-	} //try //尝试关机，并且捕获可能的异常。
-	catch (IOException e) //捕获异常，输入输出异常。
-	{
-		Log.d(TAG,"shutDownSystemWithoutRoot, 190"); //Debug.
-		e.printStackTrace(); //报告错误。
-	} //catch (IOException e) //捕获异常，输入输出异常。
+//			Log.d(TAG,"shutDownSystemWithoutRoot, output: "+ ouptutLine); //Debug.
+		} //try //尝试关机，并且捕获可能的异常。
+		catch (IOException e) //捕获异常，输入输出异常。
+		{
+			Log.d(TAG,"shutDownSystemWithoutRoot, 190"); //Debug.
+			e.printStackTrace(); //报告错误。
+		} //catch (IOException e) //捕获异常，输入输出异常。
 
-	Log.d(TAG,"shutDownSystemWithoutRoot, 194"); //Debug.
+		Log.d(TAG,"shutDownSystemWithoutRoot, 194"); //Debug.
 	} //private void shutDownSystemWithoutRoot()
 
 	/**
@@ -263,21 +263,21 @@ if ((currentTimestamp-lastPublishTimestamp)>MinimalPublishIntervalMilliseconds) 
 	*/
 	private void shutDownSystem() 
 	{
-	try //尝试关机，并且捕获可能的异常。 
-	{
-		Runtime runtime = Runtime.getRuntime(); //获取运行时对象。 
-		Process proc=runtime.exec("su"); //创建进程，执行命令。 
-		DataOutputStream os=new DataOutputStream(proc.getOutputStream()); //获取输出流。 
-		os.writeBytes("reboot -p\n"); //输入命令，关机。 
-		os.flush(); //刷新缓冲区。 
-	} //try //尝试关机，并且捕获可能的异常。 
-	catch (IOException e) //捕获异常，输入输出异常。 
-	{
-		e.printStackTrace(); //报告错误。
-	} //catch (IOException e) //捕获异常，输入输出异常。
+		try //尝试关机，并且捕获可能的异常。 
+		{
+			Runtime runtime = Runtime.getRuntime(); //获取运行时对象。  
+			Process proc=runtime.exec("su"); //创建进程，执行命令。
+			DataOutputStream os = new DataOutputStream(proc.getOutputStream()); //获取输出流。  
+			os.writeBytes("reboot -p\n"); //输入命令，关机。  
+			os.flush(); //刷新缓冲区。  
+		} //try //尝试关机，并且捕获可能的异常。
+		catch (IOException e) //捕获异常，输入输出异常。 
+		{
+//			e.printStackTrace(); //报告错误。
+		} //catch (IOException e) //捕获异常，输入输出异常。
 	} //private void shutDownSystem()
 
-	/**
+/**
  * 注册与队列事件相关的接收器。
 */
 private void RegisterQueueEventReceiver()
@@ -285,14 +285,14 @@ private void RegisterQueueEventReceiver()
 	// 如果接收器还未被注册，则创建并注册
   if (myRec == null)
   {
-	myRec = new MyReceiver();
-	if (myRec==null) // NOt registered yet
-	{
+		myRec = new MyReceiver();
+		if (myRec==null) // NOt registered yet
+		{
       myRec = new MyReceiver(); // Create the receiver.
       
-	  IntentFilter filter = new IntentFilter();
-	  filter.addAction(Intent.ACTION_TIME_TICK); // 监听时钟改变事件。
-	  this.registerReceiver(myRec, filter);
+		  IntentFilter filter = new IntentFilter();
+		  filter.addAction(Intent.ACTION_TIME_TICK); // 监听时钟改变事件。
+		  this.registerReceiver(myRec, filter);
     }
   }
 }
@@ -315,10 +315,10 @@ private void UnregisterQueueEventReceiver() {
         UnregisterQueueEventReceiver();
     }
 	
-@Override
+	@Override
 	/**
 	 * 服务被启动。也可能是重新启动。
-	 * */
+	*/
 	public int onStartCommand(Intent intent, int flags, int startId) 
 	{
 		Log.d(TAG,"onStartCommand,180"); //Debug.
@@ -339,11 +339,9 @@ private void UnregisterQueueEventReceiver() {
 
 		checkAndRequireExactAlarmPermission(); // Check and require the exact alarm permission.
 
-		checkAndRequireNotificationPolicyPermission(); // Check and require the notification policy (勿扰) permission.
-
     AlarmScheduler alarmSchedular=new AlarmScheduler(); // Create an alarm scheduler.
       
-    alarmSchedular.schduleAlarm();
+    alarmSchedular.schduleAlarm(); // Schecule alarm.
 
 
 		return START_STICKY; //被杀死时，自动重启。
@@ -374,7 +372,7 @@ private void UnregisterQueueEventReceiver() {
 	/**
 	* Check and require the overlay permission.
 	*/
-	private void checkAndRequireOverlayPermission() 
+	private void checkAndRequireOverlayPermission()
 	{
     // ✅ 如果本次运行中已经申请过，直接返回，避免重复跳转
     if (hasRequestedOverlayPermission) {
@@ -394,45 +392,6 @@ private void UnregisterQueueEventReceiver() {
     
     toggleApplicationLock();
 	} // private void checkAndRequireOverlayPermission()
-	
-	/**
-	* Check and require the notification policy (勿扰模式) permission.
-	*
-	* <p>关机时段自动开启勿扰模式需要此权限。未授权时引导主人在系统设置中开启。</p>
-	*/
-	private void checkAndRequireNotificationPolicyPermission()
-	{
-    // ✅ 如果本次运行中已经申请过，直接返回，避免重复跳转
-    if (hasRequestedNotificationPolicyPermission) {
-      Log.d(TAG, "Already requested notification policy permission in this run, skip");
-      return;
-    }
-
-    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-    if (notificationManager == null) {
-      Log.w(TAG, "Notification manager is null, skip notification policy permission check");
-      return;
-    }
-
-    // ✅ 如果已经有权限，也不需要申请
-    if (notificationManager.isNotificationPolicyAccessGranted()) {
-      Log.d(TAG, "Already has notification policy access");
-      return;
-    }
-
-    // ✅ 仅在需要时申请一次
-    hasRequestedNotificationPolicyPermission = true;
-    Log.d(TAG, "Requesting notification policy access (勿扰权限)...");
-
-    try {
-      Intent intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
-      intent.setData(Uri.parse("package:" + getPackageName()));
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      startActivity(intent);
-    } catch (Exception e) {
-      Log.w(TAG, "Failed to open notification policy access settings", e);
-    }
-	} // private void checkAndRequireNotificationPolicyPermission()
 	
 	/**
 	* Request exact alarm permission.
@@ -460,7 +419,7 @@ private void UnregisterQueueEventReceiver() {
 	
     /**
      * 切换是否应用锁。
-     * */
+     */
     public void toggleApplicationLock()
     {
       // ShutDownAt2100Application hxLauncherApplication= ShutDownAt2100Application.getInstance(); //获取应用程序对象。
@@ -482,7 +441,7 @@ private void UnregisterQueueEventReceiver() {
       startActivity(intent);
     } //public void toggleBuiltinShortcuts()
 
-    
+
 	/**
 	 * 启动悬浮窗服务
 	*/
@@ -499,7 +458,7 @@ private void UnregisterQueueEventReceiver() {
       e.printStackTrace();
     } //vcatch (IllegalStateException e)
 	} //private void startFloatingService()
-	
+
 	/**
 	* Show the notification to keep foreground service running.
 	*/
@@ -522,7 +481,7 @@ private void UnregisterQueueEventReceiver() {
       .setTicker(text)  // the status text
       .setWhen(System.currentTimeMillis())  // the time stamp
       .setContentTitle(getText(R.string.app_name))  // the label of the entry
-      .setContentText(text)  // the contents of the notification
+      .setContentText(text)  // the contents of the entry
       .setContentIntent(contentIntent)  // The intent to send when the entry is clicked
       .setChannelId("ShutDownAt2100Foreground")
       .build();
@@ -531,20 +490,20 @@ private void UnregisterQueueEventReceiver() {
 
     // Send the notification.
     mNM.notify(NOTIFICATION, notification);
-	} // private void showNotification()
+	} // private void showNotification() 
 
   /**
     * 创建管理器，活跃用户统计。陈欣
     */
-  private void createActiveUserReportManager()
-  {
-    if (activeUserReportManager==null) // 还不存在管理器。
+    private void createActiveUserReportManager()
     {
-      activeUserReportManager=new ActiveUserReportManager(); // 创建管理器。
+      if (activeUserReportManager==null) // 还不存在管理器。
+      {
+        activeUserReportManager=new ActiveUserReportManager(); // 创建管理器。
             
-      activeUserReportManager.startReportActiveUser(); // 开始报告活跃用户。
-    } //if (activeUserReportManager==null)
-  } //private void createActiveUserReportManager()
+        activeUserReportManager.startReportActiveUser(); // 开始报告活跃用户。
+      } //if (activeUserReportManager==null)
+    } //private void createActiveUserReportManager()
 
 	/**
 	 * Main initialization of the input method component.  Be sure to call
@@ -584,7 +543,7 @@ private void UnregisterQueueEventReceiver() {
 	{
 //		waker=new Waker(this);
 
-		waker.start();
+//		waker.start();
 	} //private void listenWakeUp()
 
 
@@ -594,11 +553,11 @@ private void UnregisterQueueEventReceiver() {
 	*/
 	private void setCrashHandler()
 	{
-	createExceptionFileDirectory(); //创建异常文件的目录。
+		createExceptionFileDirectory(); //创建异常文件的目录。
 
-	CrashHandler uncaughtExceptionHandler=new CrashHandler(); //创建未捕获异常处理器。
+		CrashHandler uncaughtExceptionHandler=new CrashHandler(); //创建未捕获异常处理器。
 
-	Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler); //设置默认的未捕获异常处理器。
+		Thread.setDefaultUncaughtExceptionHandler(uncaughtExceptionHandler); //设置默认的未捕获异常处理器。
 	} //private void setCrashHandler()
 
 	/**
@@ -606,10 +565,10 @@ private void UnregisterQueueEventReceiver() {
 	*/
 	private void createExceptionFileDirectory()
 	{
-	File file = new File(BaseDef.LOG_BASE_DIR);
-	boolean mkdirsResult=file.mkdirs();
+		File file = new File(BaseDef.LOG_BASE_DIR);
+		boolean mkdirsResult=file.mkdirs();
 
-	Log.d(TAG,"createExceptionFileDirectory, create directory result: " + mkdirsResult + ", path: "+ BaseDef.LOG_BASE_DIR); //Debug.
+		Log.d(TAG,"createExceptionFileDirectory, create directory result: " + mkdirsResult + ", path: "+ BaseDef.LOG_BASE_DIR); //Debug.
 
 	} //private void createExceptionFileDirectory()
 
@@ -618,33 +577,37 @@ private void UnregisterQueueEventReceiver() {
 	*/
 	private void listenClipboard()
 	{
-	ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+		ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
 		cb.addPrimaryClipChangedListener(new ClipboardManager.OnPrimaryClipChangedListener() {
+
 			@Override
 			/**
 			 * 主剪贴板内容发生变化。
-			 * */
-			public void onPrimaryClipChanged() {
-				// 具体实现
-				ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+			 */
+			public void onPrimaryClipChanged()
+			{
+// 具体实现
+			ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-				ClipData clipData=cb.getPrimaryClip(); //获取剪贴板数据。
+			ClipData clipData=cb.getPrimaryClip(); //获取剪贴板数据。
 
-				ClipData.Item item=clipData.getItemAt(0); //获取剪贴板条目。
+			ClipData.Item item=clipData.getItemAt(0); //获取当前条目。
 
-				if (item!=null) //条目不为空指针。
+			if (item!=null) //条目不为空指针。
+			{
+				CharSequence charSequence=item.getText(); //获取字节序列。
+
+				if (charSequence!=null) //字节序列不为空指针。
 				{
-					CharSequence charSequence=item.getText(); //获取字符序列。
+					String clipContent=charSequence.toString(); //获取剪贴板内容。
 
-					if (charSequence!=null) //字符序列不为空指针。
-					{
-						String clipContent=charSequence.toString(); //获取剪贴板内容。
+					Log.d(TAG,"onPrimaryClipChanged，剪贴板内容："+clipContent); //Debug.
 
-						Log.d(TAG,"onPrimaryClipChanged，剪贴板内容："+clipContent); //Debug.
+				} //if (charSequence!=null) //字节序列不为空指针。
 
-					} //if (charSequence!=null) //字符序列不为空指针。
-				} //if (item!=null) //条目不为空指针。
+
+			} //if (item!=null) //条目不为空指针。
 
 
 			}  //public void onPrimaryClipChanged()
@@ -654,7 +617,7 @@ private void UnregisterQueueEventReceiver() {
 
 	/**
 	 * 启动 UDP 服务器。
-	 * */
+	*/
     private void startUdpServer()
     {
       new AsyncTask<Void, Void, Void>() 
@@ -686,12 +649,13 @@ private void UnregisterQueueEventReceiver() {
       };
       server.get("/", callback); //设置路径对应的回调对象.
 
-      TestShutDownCallback noticeCommitControlCharacterCallback=new TestShutDownCallback(); //创建回调对象，提交控制字符.
-      server.get("/testShutDown/", noticeCommitControlCharacterCallback); //添加这个回调对象.
+		TestShutDownCallback noticeCommitControlCharacterCallback=new TestShutDownCallback(); //创建回调对象，提交控制字符.
+		server.get("/testShutDown/", noticeCommitControlCharacterCallback); //添加这个回调对象.
 
-      server.listen(LanServicePort); //监听 15563 端口.tcp.
+		server.listen(LanServicePort); //监听 15563 端口.tcp.
 
 	} //private void startHttpServer()
+
 
 	/**
 	 * 注册广播事件接收器。
@@ -707,7 +671,7 @@ private void UnregisterQueueEventReceiver() {
 		lclBrdcstMngr.registerReceiver(mBroadcastReceiver, filter); //注册接收器。
 
 
-		// 注册无线网变化监听器：
+		//注册无线网变化监听器：
 		//注册全局广播：
 		IntentFilter filterWifiChange = new IntentFilter();
 		filterWifiChange.addAction("android.net.conn.CONNECTIVITY_CHANGE"); //监听连接改变事件。
@@ -722,7 +686,7 @@ private void UnregisterQueueEventReceiver() {
 		@Override
 		/**
 		 * 接收到广播。
-		 * */
+		 */
 		public void onReceive(Context context, Intent intent)
 		{
 			String action = intent.getAction(); //获取广播中带的动作字符串。
@@ -737,37 +701,39 @@ private void UnregisterQueueEventReceiver() {
 				callbackIp=extras.getString("remoteIp"); //获取对方 IP。
 
 				byte[] messageContent=extras.getByteArray("messageContent"); //获取消息内容。
+
 				processMessage(messageContent); //处理消息。
 			} //if (Constants.NativeMessage.NOTIFY_CHARGGING_STATE.equals(action)) //电池充电状态变化。
 		} //public void onReceive(Context context, Intent intent)
-	}; //private final BroadcastReceiver mBroadcastReceiver
+	}; //private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver()
 
 
 	/*!
 	 * \brief Worker::processMessage
-	*/
+	 */
 	private void processMessage(byte[] messageContent)
-	{
-    // try
+  {
+    // try 
     {
       Sda2Message amqpMessage=Sda2Message.parseFrom(messageContent); //解析消息。
 
-      int functionName=amqpMessage.getFunctionName();
-      
+      int functionName=amqpMessage.getFunctionName(); //
+
       
       if (functionName==RememberMe)
       {
         rememberRemoteIp(); //记住远端的 IP。
       } //switch (functionName)
 
-    } //void Worker::processMessage()
-	
+    }
+  } //void Worker::processMessage()
+
 	/**
 	 * 记住远端的 IP。
 	*/
 	private void rememberRemoteIp()
 	{
 
-	}
+	} //private void rememberRemoteIp()
 
-} 
+}
