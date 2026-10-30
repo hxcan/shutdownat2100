@@ -1,9 +1,16 @@
 name: Build APK
+
 on:
   push:
     branches: [master]
   pull_request:
     branches: [master]
+
+# 必需：softprops/action-gh-release 需要 contents: write 才能创建 tag 和 Release
+# 没有这个块，master push 时会在 "Create CI Release" 步骤报 403
+# "Resource not accessible by integration"
+permissions:
+  contents: write
 
 jobs:
   build:
