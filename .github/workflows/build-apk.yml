@@ -7,8 +7,6 @@ on:
     branches: [master]
 
 # 必需：softprops/action-gh-release 需要 contents: write 才能创建 tag 和 Release
-# 没有这个块，master push 时会在 "Create CI Release" 步骤报 403
-# "Resource not accessible by integration"
 permissions:
   contents: write
 
@@ -44,17 +42,36 @@ jobs:
           chmod +x gradlew
           export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx2048m -Dorg.gradle.daemon=false"
           ./gradlew updateLintBaseline --warning-mode none || true
-      - name: Build with Gradle (Debug + Release)
+      - name: Build with Gradle (Debug)
         run: |
           chmod +x gradlew
           export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx2048m -Dorg.gradle.daemon=false"
           ./gradlew :app:assembleDebug --warning-mode none
+      - name: Assemble Release APK (unsigned)
+        run: |
+          chmod +x gradlew
+          export GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx2048m -Dorg.gradle.daemon=false"
           ./gradlew :app:assembleRelease --warning-mode none
       - name: List Debug APK Files
         run: |
           echo "=== Debug APK Directory ==="
           ls -la app/build/outputs/apk/debug/ || echo "Directory not found"
           find app/build/outputs -name "*.apk" || echo "No APK files found"
+      - name: Sign Release APK with the release keystore
+        id: sign_release
+        # 正式版签名：用 Secrets 里的 release keystore
+        # Secrets 名称与 hxcan/sisterfuture 保持一致：
+        #   APK_KEY_STORE  - release keystore 的 base64 编码
+        #   KEYSTORE_ALIAS - keystore 别名
+        #   KEY_STORE_PASSWORD - keystore 密码
+        # 若 Secrets 未配置，此步失败但不影响编译与 Debug APK 产出
+        continue-on-error: true
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.APK_KEY_STORE }}
+          alias: ${{ secrets.KEYSTORE_ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
       - name: List Signed Release APK Files
         run: |
           echo "=== After Signing ==="
