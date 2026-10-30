@@ -61,8 +61,8 @@ jobs:
         id: sign_release
         # 正式版签名：用 Secrets 里的 release keystore
         # Secrets 名称与 hxcan/sisterfuture 保持一致：
-        #   APK_KEY_STORE  - release keystore 的 base64 编码
-        #   KEYSTORE_ALIAS - keystore 别名
+        #   APK_KEY_STORE     - release keystore 的 base64 编码
+        #   KEYSTORE_ALIAS    - keystore 别名
         #   KEY_STORE_PASSWORD - keystore 密码
         # 若 Secrets 未配置，此步失败但不影响编译与 Debug APK 产出
         continue-on-error: true
@@ -72,11 +72,28 @@ jobs:
           signingKeyBase64: ${{ secrets.APK_KEY_STORE }}
           alias: ${{ secrets.KEYSTORE_ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-      - name: List Signed Release APK Files
+      - name: Rename APKs to meaningful file names
         run: |
-          echo "=== After Signing ==="
-          ls -la app/build/outputs/apk/release/ || echo "Directory not found"
-          find app/build/outputs -name "*-signed.apk" || echo "No signed APK files found"
+          VERSION=$(grep -oP 'versionName\s+"\K[^"]+' app/build.gradle | head -1)
+          VERSION_CODE=$(grep -oP 'versionCode\s+\K[0-9]+' app/build.gradle | head -1)
+          echo "version=$VERSION code=$VERSION_CODE"
+          # 调试版
+          if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
+            mv app/build/outputs/apk/debug/app-debug.apk \
+               "app/build/outputs/apk/debug/shutdownat2100-debug-v${VERSION}-${VERSION_CODE}.apk"
+          fi
+          # 正式版（apksigner 产物名带 unsigned-signed 很误导，这里改名）
+          for f in app/build/outputs/apk/release/*-signed.apk; do
+            [ -f "$f" ] || continue
+            mv "$f" "app/build/outputs/apk/release/shutdownat2100-release-v${VERSION}-${VERSION_CODE}-signed.apk"
+          done
+          # 删掉无用的中间产物（unsigned / aligned），避免 Release 里一堆垃圾
+          rm -f app/build/outputs/apk/release/app-release-unsigned.apk \
+                app/build/outputs/apk/release/app-release-unsigned-aligned.apk \
+                app/build/outputs/apk/release/output-metadata.json
+          echo "=== After Rename ==="
+          ls -la app/build/outputs/apk/debug/
+          ls -la app/build/outputs/apk/release/
       - name: Upload Debug APK artifact (PR)
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
